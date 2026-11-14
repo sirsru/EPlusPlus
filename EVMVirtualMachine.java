@@ -125,6 +125,32 @@ public class EVMVirtualMachine {
         if(jump) programCounter = destination;
     }
 
+    public static void SWAP1(){
+        int value1 = programStack.pop();
+        int value2 = programStack.pop();
+        programStack.push(value1);
+        programStack.push(value2);
+    }
+
+    public static void Swap2(){
+        int value1 = programStack.pop();
+        int value2 = programStack.pop();
+        int value3 = programStack.pop();
+        programStack.push(value3);
+        programStack.push(value2);
+        programStack.push(value1);
+    }
+
+    public static void DUP1(){
+        int value1 = programStack.pop();
+        programStack.push(value1);
+        programStack.push(value1);
+    }
+
+    public static void PRNT(){
+        System.out.println(programStack.pop());
+    }
+
     public static void execute(){
         while(programStack.size() > 0){
             int opcode = programStack.pop();
@@ -175,6 +201,38 @@ public class EVMVirtualMachine {
                     break;
                 case 15: //SHR
                     SHR();
+                    break;
+                case 16: //PUSH0
+                    PUSH0();
+                    break;
+                case 17: //PUSH
+                    int value = programStack.pop();
+                    break;
+                case 18: //MLOAD
+                    int address = programStack.pop();
+                    MLOAD(address);
+                    break;
+                case 19: //MSTORE
+                    int address2 = programStack.pop();
+                    MSTORE(address2);
+                    break;
+                case 20: //JUMP
+                    JUMP();
+                    break;
+                case 21: //JUMPI
+                    JUMPI();
+                    break;
+                case 22: //SWAP1
+                    SWAP1();
+                    break;
+                case 23: //SWAP2
+                    Swap2();
+                    break;
+                case 24: //DUP1
+                    DUP1();
+                    break;
+                case 25: //PRNT
+                    PRNT();
                     break;
                 default:
                     System.out.println("Invalid opcode");
