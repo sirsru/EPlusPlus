@@ -7,235 +7,179 @@ public class EVMVirtualMachine {
     public static int[] memory = new int[memsize];
 
     public static Stack<Integer> programStack = new Stack<>();
-
-    public static int programCounter = 0;
-    //check for STOP in computation loop instead of function
+    public static Stack<Integer> execStack = new Stack<>();
     
     public static void ADD(){
-        int value1 = programStack.pop();
-        int value2 = programStack.pop();
-        programStack.push(value1 + value2);
+        int value1 = execStack.pop();
+        int value2 = execStack.pop();
+        execStack.push(value1 + value2);
     }
 
     public static void SUB(){
-        int value1 = programStack.pop();
-        int value2 = programStack.pop();
-        programStack.push(value1 - value2);
+        int value1 = execStack.pop();
+        int value2 = execStack.pop();
+        execStack.push(value1 - value2);
     }
 
     public static void MUL(){
-        int value1 = programStack.pop();
-        int value2 = programStack.pop();
-        programStack.push(value1 * value2);
+        int value1 = execStack.pop();
+        int value2 = execStack.pop();
+        execStack.push(value1 * value2);
     }
 
     public static void DIV(){
-        int value1 = programStack.pop();
-        int value2 = programStack.pop();
-        programStack.push(value1 / value2);
+        int value1 = execStack.pop();
+        int value2 = execStack.pop();
+        execStack.push(value1 / value2);
     }
 
     public static void MOD(){
-        int value1 = programStack.pop();
-        int value2 = programStack.pop();
-        programStack.push(value1 % value2);
+        int value1 = execStack.pop();
+        int value2 = execStack.pop();
+        execStack.push(value1 % value2);
     }
     
     public static void LT(){
-        int value1 = programStack.pop();
-        int value2 = programStack.pop();
-        programStack.push((value1 < value2) ? 1 : 0);
+        int value1 = execStack.pop();
+        int value2 = execStack.pop();
+        execStack.push((value1 < value2) ? 1 : 0);
     }
     
     public static void GT(){
-        int value1 = programStack.pop();
-        int value2 = programStack.pop();
-        programStack.push((value1 > value2) ? 1 : 0);
+        int value1 = execStack.pop();
+        int value2 = execStack.pop();
+        execStack.push((value1 > value2) ? 1 : 0);
     }
     
     public static void ISZERO(){
-        int value1 = programStack.pop();
-	programStack.push((value1 == 0) ? 1 : 0);
+        int value1 = execStack.pop();
+	execStack.push((value1 == 0) ? 1 : 0);
     }
 
     public static void AND(){
-        int value1 = programStack.pop();
-        int value2 = programStack.pop();
-        programStack.push((value1 != 0 && value2 != 0) ? 1 : 0);
+        int value1 = execStack.pop();
+        int value2 = execStack.pop();
+        execStack.push((value1 != 0 && value2 != 0) ? 1 : 0);
     }
 
     public static void OR(){
-        int value1 = programStack.pop();
-        int value2 = programStack.pop();
-        programStack.push((value1 != 0 || value2 != 0) ? 1 : 0);
+        int value1 = execStack.pop();
+        int value2 = execStack.pop();
+        execStack.push((value1 != 0 || value2 != 0) ? 1 : 0);
     }
 
     public static void XOR(){
-        int value1 = programStack.pop();
-        int value2 = programStack.pop();
-        programStack.push(value1^value2);
+        int value1 = execStack.pop();
+        int value2 = execStack.pop();
+        execStack.push(value1^value2);
     }
 
     public static void NOT(){
-        int value1 = programStack.pop();
-        programStack.push(~value1);
+        int value1 = execStack.pop();
+        execStack.push(~value1);
     }
 
     public static void EQ(){
-        int value1 = programStack.pop();
-        int value2 = programStack.pop();
-        programStack.push((value1==value2) ? 1 : 0);
+        int value1 = execStack.pop();
+        int value2 = execStack.pop();
+        execStack.push((value1==value2) ? 1 : 0);
     }
 
     public static void SHL(){
-        int value1 = programStack.pop();
-        int value2 = programStack.pop();
-        programStack.push(value1 << value2);
+        int value1 = execStack.pop();
+        int value2 = execStack.pop();
+        execStack.push(value1 << value2);
     }
 
     public static void SHR(){
-        int value1 = programStack.pop();
-        int value2 = programStack.pop();
-        programStack.push(value1 >> value2);
+        int value1 = execStack.pop();
+        int value2 = execStack.pop();
+        execStack.push(value1 >> value2);
     }
 
     public static void PUSH0(){
-        programStack.push(0);
+        execStack.push(0);
     }
 
     public static void PUSH(int value){
-        programStack.push(value);
+        execStack.push(value);
     }
 
     public static void MLOAD(int address){
-        programStack.push(memory[address]);
+        execStack.push(memory[address]);
     }
 
     public static void MSTORE(int address){
-        memory[address] = programStack.pop();
+        memory[address] = execStack.pop();
     }
 
     public static void JUMP(){
-        programCounter = programStack.pop();
+        execCounter = execStack.pop();
     }
 
     public static void JUMPI(){
-        int destination = programStack.pop();
-        boolean jump = (programStack.pop() == 0);
-        if(jump) programCounter = destination;
+        int destination = execStack.pop();
+        boolean jump = (execStack.pop() == 0);
+        if(jump) execCounter = destination;
     }
 
     public static void SWAP1(){
-        int value1 = programStack.pop();
-        int value2 = programStack.pop();
-        programStack.push(value1);
-        programStack.push(value2);
+        int value1 = execStack.pop();
+        int value2 = execStack.pop();
+        execStack.push(value1);
+        execStack.push(value2);
     }
 
     public static void Swap2(){
-        int value1 = programStack.pop();
-        int value2 = programStack.pop();
-        int value3 = programStack.pop();
-        programStack.push(value3);
-        programStack.push(value2);
-        programStack.push(value1);
+        int value1 = execStack.pop();
+        int value2 = execStack.pop();
+        int value3 = execStack.pop();
+        execStack.push(value3);
+        execStack.push(value2);
+        execStack.push(value1);
     }
 
     public static void DUP1(){
-        int value1 = programStack.pop();
-        programStack.push(value1);
-        programStack.push(value1);
+        int value1 = execStack.pop();
+        execStack.push(value1);
+        execStack.push(value1);
     }
 
     public static void PRNT(){
-        System.out.println(programStack.pop());
+        System.out.println(execStack.pop());
     }
 
-    public static void execute(){
-        while(programStack.size() > 0){
-            int opcode = programStack.pop();
-            switch(opcode){
-                case 0: //STOP
-                    return;
-                case 1: //ADD
-                    ADD();
-                    break;
-                case 2: //SUB
-                    SUB();
-                    break;
-                case 3: //MUL
-                    MUL();
-                    break;
-                case 4: //DIV
-                    DIV();
-                    break;
-                case 5: //MOD
-                    MOD();
-                    break;
-                case 6: //LT
-                    LT();
-                    break;
-                case 7: //GT
-                    GT();
-                    break;
-                case 8: //ISZERO
-                    ISZERO();
-                    break;
-                case 9: //AND
-                    AND();
-                    break;
-                case 10: //OR
-                    OR();
-                    break;
-                case 11: //XOR
-                    XOR();
-                    break;
-                case 12: //NOT
-                    NOT();
-                    break;
-                case 13: //EQ
-                    EQ();
-                    break;
-                case 14: //SHL
-                    SHL();
-                    break;
-                case 15: //SHR
-                    SHR();
-                    break;
-                case 16: //PUSH0
-                    PUSH0();
-                    break;
-                case 17: //PUSH
-                    int value = programStack.pop();
-                    break;
-                case 18: //MLOAD
-                    int address = programStack.pop();
-                    MLOAD(address);
-                    break;
-                case 19: //MSTORE
-                    int address2 = programStack.pop();
-                    MSTORE(address2);
-                    break;
-                case 20: //JUMP
-                    JUMP();
-                    break;
-                case 21: //JUMPI
-                    JUMPI();
-                    break;
-                case 22: //SWAP1
-                    SWAP1();
-                    break;
-                case 23: //SWAP2
-                    Swap2();
-                    break;
-                case 24: //DUP1
-                    DUP1();
-                    break;
-                case 25: //PRNT
-                    PRNT();
-                    break;
-                default:
-                    System.out.println("Invalid opcode");
+    public static void execute() {
+        while (!execStack.isEmpty()) {
+            int opcode = execStack.pop();
+            switch (opcode) {
+                case 0:  return;
+                case 1:  ADD(); break;
+                case 2:  SUB(); break;
+                case 3:  MUL(); break;
+                case 4:  DIV(); break;
+                case 5:  MOD(); break;
+                case 6:  LT(); break;
+                case 7:  GT(); break;
+                case 8:  ISZERO(); break;
+                case 9:  AND(); break;
+                case 10: OR(); break;
+                case 11: XOR(); break;
+                case 12: NOT(); break;
+                case 13: EQ(); break;
+                case 14: SHL(); break;
+                case 15: SHR(); break;
+                case 16: PUSH0(); break;
+                case 17: { int v = execStack.pop(); PUSH(v); break; }
+                case 18: { int a = execStack.pop(); MLOAD(a); break; }
+                case 19: { int a = execStack.pop(); MSTORE(a); break; }
+                case 20: JUMP(); break;
+                case 21: JUMPI(); break;
+                case 22: SWAP1(); break;
+                case 23: SWAP2(); break;
+                case 24: DUP1(); break;
+                case 25: PRNT(); break;
+                default: System.out.println("Invalid opcode: " + opcode);
             }
         }
     }
