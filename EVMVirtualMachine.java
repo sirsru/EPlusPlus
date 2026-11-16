@@ -3,9 +3,6 @@ package Language;
 import java.util.Stack;
 
 public class EVMVirtualMachine {
-    public static int memsize = 1024;
-    public static int[] memory = new int[memsize];
-
     public static Stack<Integer> programStack = new Stack<>();
     public static Stack<Integer> execStack = new Stack<>();
     
@@ -114,7 +111,9 @@ public class EVMVirtualMachine {
     }
 
     public static void JUMP(){
-        execCounter = execStack.pop();
+        int programIndex = execStack.pop();
+
+        
     }
 
     public static void JUMPI(){
@@ -130,7 +129,7 @@ public class EVMVirtualMachine {
         execStack.push(value2);
     }
 
-    public static void Swap2(){
+    public static void SWAP2(){
         int value1 = execStack.pop();
         int value2 = execStack.pop();
         int value3 = execStack.pop();
@@ -139,8 +138,34 @@ public class EVMVirtualMachine {
         execStack.push(value1);
     }
 
+    public static void SWAP3(){
+        int value1 = execStack.pop();
+        int value2 = execStack.pop();
+        int value3 = execStack.pop();
+        int value4 = execStack.pop();
+        execStack.push(value4);
+        execStack.push(value2);
+        execStack.push(value3);
+        execStack.push(value1);
+    }
+
     public static void DUP1(){
         int value1 = execStack.pop();
+        execStack.push(value1);
+        execStack.push(value1);
+    }
+
+    public static void DUP2(){
+        int value1 = execStack.pop();
+        execStack.push(value1);
+        execStack.push(value1);
+        execStack.push(value1);
+    }
+
+    public static void DUP3(){
+        int value1 = execStack.pop();
+        execStack.push(value1);
+        execStack.push(value1);
         execStack.push(value1);
         execStack.push(value1);
     }
