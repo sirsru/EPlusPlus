@@ -25,6 +25,18 @@ public class Tokenize {
     private static final Map<String, Integer> variables = new HashMap<>();
     private static int nextAddress = 0;
 
+
+    
+    private static String preprocess(String src) {
+        StringBuilder out = new StringBuilder();
+        for (String line : src.split("\n", -1)) {
+            int cut = line.indexOf("//");
+            if (cut >= 0) line = line.substring(0, cut);
+            out.append(line).append('\n');
+        }
+        return out.toString();
+    }
+
     public static String[] splitByColon3(String input) {
         return input.split("\\s*:3\\s*");
     }
