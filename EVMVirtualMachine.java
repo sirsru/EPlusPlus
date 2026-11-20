@@ -7,165 +7,119 @@ public class EVMVirtualMachine {
     public static int[] memory = new int[memSize];
 
     public static Stack<Integer> programStack = new Stack<>();
-    public static Stack<Boolean> isOPCODE = new Stack<>();
     public static Stack<Integer> execStack = new Stack<>();
     
     public static void ADD(){
         int value1 = execStack.pop();
         int value2 = execStack.pop();
-        isOPCODE.pop();
-        isOPCODE.pop();
 
         execStack.push(value1 + value2);
-        isOPCODE.push(false);
     }
 
     public static void SUB(){
         int value1 = execStack.pop();
         int value2 = execStack.pop();
-        isOPCODE.pop();
-        isOPCODE.pop();
 
         execStack.push(value1 - value2);
-        isOPCODE.push(false);
     }
 
     public static void MUL(){
         int value1 = execStack.pop();
         int value2 = execStack.pop();
-        isOPCODE.pop();
-        isOPCODE.pop();
 
         execStack.push(value1 * value2);
-        isOPCODE.push(false);
     }
 
     public static void DIV(){
         int value1 = execStack.pop();
         int value2 = execStack.pop();
-        isOPCODE.pop();
-        isOPCODE.pop();
 
         execStack.push(value1 / value2);
-        isOPCODE.push(false);
     }
 
     public static void MOD(){
         int value1 = execStack.pop();
         int value2 = execStack.pop();
-        isOPCODE.pop();
-        isOPCODE.pop();
 
         execStack.push(value1 % value2);
-        isOPCODE.push(false);
     }
     
     public static void LT(){
         int value1 = execStack.pop();
         int value2 = execStack.pop();
-        isOPCODE.pop();
-        isOPCODE.pop();
 
         execStack.push((value1 < value2) ? 1 : 0);
-        isOPCODE.push(false);
     }
     
     public static void GT(){
         int value1 = execStack.pop();
         int value2 = execStack.pop();
-        isOPCODE.pop();
-        isOPCODE.pop();
 
         execStack.push((value1 > value2) ? 1 : 0);
-        isOPCODE.push(false);
     }
     
     public static void ISZERO(){
         int value1 = execStack.pop();
-        isOPCODE.pop();
 
 	    execStack.push((value1 == 0) ? 1 : 0);
-        isOPCODE.push(false);
     }
 
     public static void AND(){
         int value1 = execStack.pop();
         int value2 = execStack.pop();
-        isOPCODE.pop();
-        isOPCODE.pop();
 
         execStack.push((value1 != 0 && value2 != 0) ? 1 : 0);
-        isOPCODE.push(false);
     }
 
     public static void OR(){
         int value1 = execStack.pop();
         int value2 = execStack.pop();
-        isOPCODE.pop();
-        isOPCODE.pop();
         
         execStack.push((value1 != 0 || value2 != 0) ? 1 : 0);
-        isOPCODE.push(false);
     }
 
     public static void XOR(){
         int value1 = execStack.pop();
         int value2 = execStack.pop();
-        isOPCODE.pop();
-        isOPCODE.pop();
 
         execStack.push(value1^value2);
-        isOPCODE.push(false);
     }
 
     public static void NOT(){
         int value1 = execStack.pop();
-        isOPCODE.pop();
 
         execStack.push(~value1);
-        isOPCODE.push(false);
     }
 
     public static void EQ(){
         int value1 = execStack.pop();
         int value2 = execStack.pop();
-        isOPCODE.pop();
-        isOPCODE.pop();
 
         execStack.push((value1==value2) ? 1 : 0);
-        isOPCODE.push(false);
     }
 
     public static void SHL(){
         int value1 = execStack.pop();
         int value2 = execStack.pop();
-        isOPCODE.pop();
-        isOPCODE.pop();
 
         execStack.push(value1 << value2);
-        isOPCODE.push(false);
     }
 
     public static void SHR(){
         int value1 = execStack.pop();
         int value2 = execStack.pop();
-        isOPCODE.pop();
-        isOPCODE.pop();
 
         execStack.push(value1 >> value2);
-        isOPCODE.push(false);
     }
 
     public static void PUSH0(){
         execStack.push(0);
-        isOPCODE.push(false);
     }
 
 
     //FOR DEBUG ONLY
     public static void PUSH(int value){
         execStack.push(value);
-        isOPCODE.push(false);
     }
 
     public static void MLOAD(){
@@ -192,29 +146,18 @@ public class EVMVirtualMachine {
     public static void SWAP1(){
         int value1 = execStack.pop();
         int value2 = execStack.pop();
-        Boolean isOP1 = isOPCODE.pop();
-        Boolean isOP2 = isOPCODE.pop();
 
         execStack.push(value1);
         execStack.push(value2);
-        isOPCODE.push(isOP1);
-        isOPCODE.push(isOP2);
     }
 
     public static void SWAP2(){
         int value1 = execStack.pop();
         int value2 = execStack.pop();
         int value3 = execStack.pop();
-        Boolean isOP1 = isOPCODE.pop();
-        Boolean isOP2 = isOPCODE.pop();
-        Boolean isOP3 = isOPCODE.pop();
-
         execStack.push(value3);
         execStack.push(value2);
         execStack.push(value1);
-        isOPCODE.push(isOP3);
-        isOPCODE.push(isOP2);
-        isOPCODE.push(isOP1);
     }
 
     public static void SWAP3(){
@@ -222,76 +165,39 @@ public class EVMVirtualMachine {
         int value2 = execStack.pop();
         int value3 = execStack.pop();
         int value4 = execStack.pop();
-        Boolean isOP1 = isOPCODE.pop();
-        Boolean isOP2 = isOPCODE.pop();
-        Boolean isOP3 = isOPCODE.pop();
-        Boolean isOP4 = isOPCODE.pop();
 
         execStack.push(value4);
         execStack.push(value2);
         execStack.push(value3);
         execStack.push(value1);
-        isOPCODE.push(isOP4);
-        isOPCODE.push(isOP2);
-        isOPCODE.push(isOP3);
-        isOPCODE.push(isOP1);
     }
 
     public static void DUP1(){
         int value1 = execStack.pop();
-        Boolean isOP1 = isOPCODE.pop();
 
         execStack.push(value1);
         execStack.push(value1);
-        isOPCODE.push(isOP1);
-        isOPCODE.push(isOP1);
     }
 
     public static void DUP2(){
         int value1 = execStack.pop();
-        Boolean isOP1 = isOPCODE.pop();
 
         execStack.push(value1);
         execStack.push(value1);
         execStack.push(value1);
-        isOPCODE.push(isOP1);
-        isOPCODE.push(isOP1);
-        isOPCODE.push(isOP1);
     }
 
     public static void DUP3(){
         int value1 = execStack.pop();
-        Boolean isOP1 = isOPCODE.pop();
 
         execStack.push(value1);
         execStack.push(value1);
         execStack.push(value1);
         execStack.push(value1);
-        isOPCODE.push(isOP1);
-        isOPCODE.push(isOP1);
-        isOPCODE.push(isOP1);
     }
 
     public static void PRNT(){
         System.out.println(execStack.pop());
-    }
-
-    public static void CASTNOT(){
-        Boolean isOP1 = isOPCODE.pop();
-
-        isOPCODE.push(!isOP1);
-    }
-
-    public static void CASTINT(){
-        Boolean isOP1 = isOPCODE.pop();
-
-        isOPCODE.push(false);
-    }
-
-    public static void CASTOPCODE(){
-        Boolean isOP1 = isOPCODE.pop();
-
-        isOPCODE.push(true);
     }
 
     public static void execute() {
