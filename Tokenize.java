@@ -1,136 +1,82 @@
 package Language;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Stack;
 
 public class Tokenize {
-    public static void main(String[] args){
-        
+    private static final Map<String, Integer> INFIX = new HashMap<>();
+    private static final Map<String, Integer> WORDS = new HashMap<>();
+
+    static {
+        INFIX.put("+", 1);  INFIX.put("-", 2);  INFIX.put("*", 3);
+        INFIX.put("/", 4);  INFIX.put("%", 5);  INFIX.put("<", 6);
+        INFIX.put(">", 7);  INFIX.put("==", 13);
+
+        WORDS.put("ISZERO", 8);  WORDS.put("AND", 9);   WORDS.put("OR", 10);
+        WORDS.put("XOR", 11);    WORDS.put("NOT", 12);  WORDS.put("PUSH0", 16);
+        WORDS.put("MLOAD", 18);  WORDS.put("MSTORE", 19);
+        WORDS.put("SWAP1", 22);  WORDS.put("SWAP2", 23);
+        WORDS.put("DUP1", 24);   WORDS.put("PRNT", 25);
     }
 
-    // outputs 1 dimensional String array. Each array element is a line of code
-    // -> output is an array of lines of code
-    public static String[] splitByColon3(String input){
-        
-        String[] tokens = input.split("\\s*:3\\s*");
-        return tokens;
+    private static final Map<String, Integer> variables = new HashMap<>();
+    private static int nextAddress = 0;
+
+    public static String[] splitByColon3(String input) {
+        return input.split("\\s*:3\\s*");
     }
 
-    // outputs 2 dimensional String array. Each element of the first dimension is a line of code
-    // each element of the second dimension is a token in that line of code
-    // -> output is an array of tokens for each line of code
-    public static String[][] splitBySpace(String[] input){
+    public static String[][] splitBySpace(String[] input) {
         String[][] tokens = new String[input.length][];
-        for(int i = 0; i < input.length; i++){
+        for (int i = 0; i < input.length; i++) {
             tokens[i] = input[i].trim().split("\\s+");
         }
         return tokens;
     }
 
-    // outputs 2 dimensional String array. Each element of the first dimension is a line of code
-    // each element in the second dimension is a token in that line of code, with arithmetic operators converted to function calls
-    // -> output is an array of tokens for each line of code
-    public static String[][] arithmeticToFunction(String[][] input){
-        String[][] tokens = new String[input.length][];
-        for(int i = 0; i < input.length; i++){
-            tokens[i] = new String[input[i].length];
-            for(int j = 0; j < input[i].length; j++){
-                String token = input[i][j];
-                switch(token){
-                    case "+":
-                        tokens[i][j] = "ADD(" + tokens[i][j - 2] + "," + tokens[i][j + 1] + ")";
-                        break;
-                    case "-":
-                        tokens[i][j] = "SUB(" + tokens[i][j - 2] + "," + tokens[i][j + 1] + ")";
-                        break;
-                    case "*":
-                        tokens[i][j] = "MUL(" + tokens[i][j - 2] + "," + tokens[i][j + 1] + ")";
-                        break;
-                    case "/":
-                        tokens[i][j] = "DIV(" + tokens[i][j - 2] + "," + tokens[i][j + 1] + ")";
-                        break;
-                    case "%":
-                        tokens[i][j] = "MOD(" + tokens[i][j - 2] + "," + tokens[i][j + 1] + ")";
-                        break;
-                    case "<":
-                        tokens[i][j] = "LT(" + tokens[i][j - 2] + "," + tokens[i][j + 1] + ")";
-                        break;
-                    case ">":
-                        tokens[i][j] = "GT(" + tokens[i][j - 2] + "," + tokens[i][j + 1] + ")";
-                        break;
-                    case "==":
-                        tokens[i][j] = "EQ(" + tokens[i][j - 2] + "," + tokens[i][j + 1] + ")";
-                        break;
-                    default:
-                        tokens[i][j] = token;
+    public static List<Integer> compile(String[][] lines) {
+        List<Integer> code = new ArrayList<>();
+        for (int i = 0; i < lines.length; i++) {
+            String[] line = lines[i];
+            for (int j = 0; j < line.length; j++) {
+                String t = line[j];
+                Integer infix = INFIX.get(t);
+                if (infix != null) {
+                    if (j == 0 || j == line.length - 1)
+                        throw new IllegalArgumentException(
+                            "Line " + i + ": operator '" + t + "' is missing an operand :(");
+                    emitValue(line[j - 1], code);
+                    emitValue(line[j + 1], code);
+                    code.add(infix);
+                    j++;
+                } else if (WORDS.containsKey(t)) {
+                    code.add(WORDS.get(t));
+                } else {
+                    throw new IllegalArgumentException("Line " + i + ": unknown token '" + t + "' :(");
                 }
             }
         }
-        return tokens;
+        return code;
     }
 
-    // ---------------------------
-    //        post processing
-    // ---------------------------
-
-    // outputs 3 dimensional String array. Each element of the first dimension is a line of code
-    // each element of the second dimension is a function, third dimesion is the parameters of that function
-    // -> output is an array of functions with parameters for each line of code
-    public static String[][][] findFunctions(String[][] input){
-        String[][][] tokens = new String[input.length][][];
-        for(int i = 0; i < input.length; i++){
-            tokens[i] = new String[input[i].length][];
-            for(int j = 0; j < input[i].length; j++){
-                String[] functionAndParams = input[i][j].split("\\(");
-                String functionName = functionAndParams[0];
-                String[] params = functionAndParams[1].replace(")", "").split(",");
-                tokens[i][j] = new String[params.length + 1];
-                tokens[i][j][0] = functionName;
-                for(int k = 0; k < params.length; k++){
-                    tokens[i][j][k + 1] = params[k].trim();
-                }
-            }
+    private static void emitValue(String token, List<Integer> code) {
+        try {
+            code.add(17); // PUSH
+            code.add(Integer.parseInt(token));
+        } catch (NumberFormatException e) {
+            int addr = variables.computeIfAbsent(token, k -> nextAddress++);
+            code.add(17);
+            code.add(addr);
+            code.add(18); // MLOAD
         }
-        return tokens;
     }
 
-    public static Stack<Integer> toOPCodes(String[][][] input){
-        Stack<Integer> opCodes = new Stack<>();
-        for(int i = 0; i < input.length; i++){
-            for(int j = 0; j < input[i].length; j++){
-                String functionName = input[i][j][0];
-                switch(functionName){
-                    case "ADD":
-                        opCodes.push(1);
-                        break;
-                    case "SUB":
-                        opCodes.push(2);
-                        break;
-                    case "MUL":
-                        opCodes.push(3);
-                        break;
-                    case "DIV":
-                        opCodes.push(4);
-                        break;
-                    case "MOD":
-                        opCodes.push(5);
-                        break;
-                    case "LT":
-                        opCodes.push(6);
-                        break;
-                    case "GT":
-                        opCodes.push(7);
-                        break;
-                    case "EQ":
-                        opCodes.push(13);
-                        break;
-                    default:
-                        System.out.println("Unknown function: " + functionName);
-                }
-                for(int k = 1; k < input[i][j].length; k++){
-                    opCodes.push(Integer.parseInt(input[i][j][k]));
-                }
-            }
-        }
-        return opCodes;
+    public static Stack<Integer> load(List<Integer> code) {
+        Stack<Integer> program = new Stack<>();
+        for (int i = code.size() - 1; i >= 0; i--) program.push(code.get(i));
+        return program;
     }
 }
